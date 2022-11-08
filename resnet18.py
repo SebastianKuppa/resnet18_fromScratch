@@ -93,3 +93,21 @@ class ResNet(nn.Module):
             ))
 
         return nn.Sequential(*layers)
+
+    def forward(self, x: Tensor):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        print(f"Dimensions of the last convolutional feature map: {x.shape}")
+
+        x = self.avg_pool(x)
+        x = torch.flatten(x, 1)
+        x = self.fc(x)
+
+        return x
