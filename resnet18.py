@@ -63,4 +63,33 @@ class ResNet(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512*self.expansion, num_classes)
 
+    def _make_layer(self, block: Type[BasicBlock], out_channels: int, blocks: int, stride: int = 1) -> nn.Sequential:
+        downsample = None
+        if stride != 1:
+            """
+            This should happen for layer2, layer3 and layer4 or when building ResNet50
+            """
+            downsample = nn.Sequential(
+                nn.Conv2d(
+                    self.in_channels,
+                    out_channels*self.expansion,
+                    kernel_size=1,
+                    stride=stride,
+                    bias=False
+                ),
+                nn.BatchNorm2d(out_channels*self.expansion)
+            )
+        layers = []
+        layers.append(
+            block(self.in_channels, out_channels, stride, self.expansion, downsample)
+        )
+        self.in_channels = out_channels*self.expansion
 
+        for i in range(1, blocks):
+            layers.append(block(
+                self.in_channels,
+                out_channels,
+                expansion=self.expansion
+            ))
+
+        return nn.Sequential(*layers)
