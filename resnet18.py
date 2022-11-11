@@ -117,3 +117,11 @@ if __name__ == "__main__":
     tensor = torch.rand([1, 3, 244, 244])
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock)
     print(f"Current model: \n {model}")
+
+    # total params and trainable params
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"{total_params:,} total parameters")
+    total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f"{total_trainable_params:,} total trainable parameters")
+
+    output = model(tensor)
