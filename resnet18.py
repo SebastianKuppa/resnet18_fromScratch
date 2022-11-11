@@ -111,3 +111,9 @@ class ResNet(nn.Module):
         x = self.fc(x)
 
         return x
+
+
+if __name__ == "__main__":
+    tensor = torch.rand([1, 3, 244, 244])
+    model = ResNet(img_channels=3, num_layers=18, block=BasicBlock)
+    print(f"Current model: \n {model}")
