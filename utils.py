@@ -9,6 +9,11 @@ plt.style.use('ggplot')
 
 
 def get_data(batch_size=64):
+    """
+    Creates the dataloader objects for CIFAR10 dataset
+    :param batch_size: batch size
+    :return: dataloader for training and validation datasets
+    """
     # CIFAR10 dataset for training
     dataset_train = datasets.CIFAR10(
         root='data',
