@@ -5,6 +5,8 @@ import argparse
 import numpy as np
 import random
 
+import utils
+
 from resnet18 import ResNet, BasicBlock
 from resnet18_torchvision import build_model
 from training_utils import train, validate
@@ -25,4 +27,16 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = True
 np.random.seed(seed)
 random.seed(seed)
+
+# learning and training params
+epochs = 20
+batch_size = 64
+learning_rate = 0.01
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+train_loader, valid_loader = get_data(batch_size=batch_size)
+
+if args['model'] == 'scratch':
+    print('[INFO]: Training ResNet18 built from scratch..')
+    model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=10).to(device)
+    plot_name = 'resnet_scratch'
 
