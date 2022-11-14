@@ -43,12 +43,45 @@ if args['model'] == 'torchvision':
     print('[INFO]: Training the Torchvision Resnet18 model..')
     model = build_model(pretrained=False, fine_tune=True, num_classes=10)
     plot_name = 'resnet_torchvision'
-# print total params and number of trainable params
+
+#print total params and number of trainable params
 total_params = sum(p.numel() for p in model.parameters())
 print(f'{total_params:,} total parameters')
 total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f'{total_trainable_params:,} training parameters')
+
 # init optimizer
 optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 # loss function
 criterion = nn.CrossEntropyLoss()
+
+if __name__ == '__main__':
+    # create lists for losses and accuracies
+    train_loss, valid_loss = [], []
+    train_acc, valid_acc = [], []
+    # start the training
+    for epoch in range(epochs):
+        print(f'[INFO]: Epoch {epoch} out of {epochs}')
+        train_epoch_loss, train_epoch_acc = train(model=model,
+                                                  trainloader=train_loader,
+                                                  optimizer=optimizer,
+                                                  criterion=criterion,
+                                                  device=device)
+        valid_epoch_loss, valid_epoch_acc = validate(model=model,
+                                                     testloader=valid_loader,
+                                                     criterion=criterion,
+                                                     device=device)
+        train_loss.append(train_epoch_loss)
+        valid_loss.append(valid_epoch_loss)
+        train_acc.append(train_epoch_acc)
+        valid_acc.append(valid_epoch_acc)
+        print(f'Training loss: {train_epoch_loss:.3f}, training acc: {train_epoch_acc:.3f}')
+        print(f'Validation loss: {valid_epoch_loss:.3f}, validation acc: {valid_epoch_acc:.3f}')
+        print('-'*50)
+    # save plots to disk
+    save_plots(train_acc,
+               valid_acc,
+               train_loss,
+               valid_loss,
+               plot_name)
+    print('Training finished..')
