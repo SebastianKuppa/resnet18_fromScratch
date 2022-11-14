@@ -39,4 +39,16 @@ if args['model'] == 'scratch':
     print('[INFO]: Training ResNet18 built from scratch..')
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=10).to(device)
     plot_name = 'resnet_scratch'
-
+if args['model'] == 'torchvision':
+    print('[INFO]: Training the Torchvision Resnet18 model..')
+    model = build_model(pretrained=False, fine_tune=True, num_classes=10)
+    plot_name = 'resnet_torchvision'
+# print total params and number of trainable params
+total_params = sum(p.numel() for p in model.parameters())
+print(f'{total_params:,} total parameters')
+total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print(f'{total_trainable_params:,} training parameters')
+# init optimizer
+optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+# loss function
+criterion = nn.CrossEntropyLoss()
