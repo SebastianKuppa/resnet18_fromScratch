@@ -121,3 +121,16 @@ class ResNet(nn.Module):
             padding=3,
             bias=False
         )
+        self.bn1 = nn.BatchNorm2d(self.in_channels)
+        self.relu = nn.ReLU()
+        self.max_pool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        self.layer1 = self._make_layer(block, 64,  layers[0], num_layers=num_layers)
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, num_layers=num_layers)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, num_layers=num_layers)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, num_layers=num_layers)
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(512*self.expansion, num_classes)
+
+    def _make_layer(self, block: Type[BasicBlock], ):
