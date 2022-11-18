@@ -133,4 +133,44 @@ class ResNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512*self.expansion, num_classes)
 
-    def _make_layer(self, block: Type[BasicBlock], ):
+    def _make_layer(self, block: Type[BasicBlock], out_channels: int, blocks: int, stride: int = 1,
+                    num_layers: int = 18) -> nn.Sequential:
+        downsample = None
+        if stride != 1 or self.in_channels != out_channels * self.expansion:
+            # section 3.3 of paper (https://arxiv.org/pdf/1512.03385v1.pdf)
+            downsample = nn.Sequential(
+                nn.Conv2d(
+                    self.in_channels,
+                    out_channels*self.expansion,
+                    kernel_size=1,
+                    stride=stride,
+                    bias=False
+                ),
+                nn.BatchNorm2d(out_channels*self.expansion),
+            )
+        layers = []
+        layers.append(
+            block(
+                num_layers,
+                self.in_channels,
+                out_channels,
+                stride,
+                self.expansion,
+                downsample
+            )
+        )
+        self.in_channels = out_channels * self.expansion
+
+        for i in range(1, blocks):
+            layers.append(
+                block(
+                    num_layers,
+                    self.in_channels,
+                    out_channels,
+                    expansion=self.expansion
+                )
+            )
+        return nn.Sequential(*layers)
+
+    def forward(self, x: Tensor):
+
