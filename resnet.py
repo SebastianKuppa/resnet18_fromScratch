@@ -190,3 +190,20 @@ class ResNet(nn.Module):
 
         return x
 
+
+if __name__ == '__main__':
+    tensor = torch.rand([1, 3, 224, 224])
+    model = ResNet(
+        img_channels=3,
+        num_layers=args['num-layers'],
+        block=BasicBlock,
+        num_classes=1000
+    )
+    print(model)
+    # total params and trainable params
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f'Total parameters: {total_params}')
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f'Trainable parameters: {trainable_params}')
+
+    output = model(tensor)
