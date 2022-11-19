@@ -16,7 +16,11 @@ args = vars(parser.parse_args())
 
 
 class BasicBlock(nn.Module):
-    def __init__(self, num_layers: int, in_channels: int, out_channels: int, stride: int = 1, expansion: int = 1,
+    def __init__(self, num_layers: int,
+                 in_channels: int,
+                 out_channels: int,
+                 stride: int = 1,
+                 expansion: int = 1,
                  downsample: nn.Module = None) -> None:
         super(BasicBlock, self).__init__()
         self.num_layers = num_layers
@@ -42,6 +46,7 @@ class BasicBlock(nn.Module):
             out_channels,
             kernel_size=3,
             stride=stride,
+            padding=1,
             bias=False
         )
         self.bn1 = nn.BatchNorm2d(out_channels)
@@ -67,7 +72,7 @@ class BasicBlock(nn.Module):
             self.bn2 = nn.BatchNorm2d(out_channels * self.expansion)
         self.relu = nn.ReLU(inplace=True)
 
-    def forward(self, x: Tensor)->Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         identity = x
         # 1x1 conv for resnet > 34
         if self.num_layers > 34:
@@ -195,7 +200,7 @@ if __name__ == '__main__':
     tensor = torch.rand([1, 3, 224, 224])
     model = ResNet(
         img_channels=3,
-        num_layers=args['num-layers'],
+        num_layers=args['num_layers'],
         block=BasicBlock,
         num_classes=1000
     )
